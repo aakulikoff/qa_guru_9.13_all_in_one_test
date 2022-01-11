@@ -29,6 +29,7 @@ public class BasicPositiveTests extends TestBase {
     }
 
     @Test
+    @Tags({@Tag("positive"), @Tag("ready")})
     public void negativeFillFormTest() {
 
         step("Открыть главную страницу", () -> {
@@ -62,6 +63,7 @@ public class BasicPositiveTests extends TestBase {
 
 
     @Test
+    @Tags({@Tag("positive"), @Tag("ready")})
     public void findProjectTest() {
 
         step("Открыть главную страницу", () -> {
@@ -80,6 +82,7 @@ public class BasicPositiveTests extends TestBase {
 
 
         @Test
+        @Tags({@Tag("positive"), @Tag("ready")})
         public void searchJobTest() {
 
             step("Открыть главную страницу", () -> {
