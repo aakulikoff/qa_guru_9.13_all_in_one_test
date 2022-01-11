@@ -5,40 +5,54 @@ import io.qameta.allure.Attachment;
 import org.openqa.selenium.*;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
+import java.net.*;
 import java.nio.charset.StandardCharsets;
 
 import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
 import static org.openqa.selenium.logging.LogType.BROWSER;
-import static org.openqa.selenium.remote.HttpSessionId.getSessionId;
 
-public class AttachmentHelper {
-    @Attachment(value = "{attachName}", type = "image/png")
-    public static byte[] attachScreenshot(String attachName) {
-        return ((TakesScreenshot) getWebDriver()).getScreenshotAs(OutputType.BYTES);
-    }
-
+public class Attach {
     @Attachment(value = "{attachName}", type = "text/plain")
     public static String attachAsText(String attachName, String message) {
         return message;
     }
 
     @Attachment(value = "Page source", type = "text/plain")
-    public static byte[] attachPageSource() {
+    public static byte[] pageSource() {
         return getWebDriver().getPageSource().getBytes(StandardCharsets.UTF_8);
     }
 
-    public static String getConsoleLogs() {
-        return String.join("\n", Selenide.getWebDriverLogs(BROWSER));
+    @Attachment(value = "{attachName}", type = "image/png")
+    public static byte[] screenshotAs(String attachName) {
+        return ((TakesScreenshot) getWebDriver()).getScreenshotAs(OutputType.BYTES);
+    }
+
+    public static void browserConsoleLogs() {
+        attachAsText(
+                "Browser console logs",
+                String.join("\n", Selenide.getWebDriverLogs(BROWSER))
+        );
     }
 
     @Attachment(value = "Video", type = "text/html", fileExtension = ".html")
-    public static String attachVideo() {
+    public static String addVideo() {
         return "<html><body><video width='100%' height='100%' controls autoplay><source src='"
-                + System.getProperty("video.storage") + getSessionId() + ".mp4"
+                + getVideoUrl(getSessionId())
                 + "' type='video/mp4'></video></body></html>";
     }
 
-    public static String getSessionId() {
+    public static URL getVideoUrl(String sessionId) {
+        String videoUrl = "https://selenoid.autotests.cloud/video/" + sessionId + ".mp4";
+
+        try {
+            return new URL(videoUrl);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static String getSessionId(){
         return ((RemoteWebDriver) getWebDriver()).getSessionId().toString();
     }
 }
